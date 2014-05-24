@@ -1,0 +1,2 @@
+1. criar uma topologia em mininet que utiliza os switches OVS como bridges com VLANS
+2. se possivel, nao alterar o codigo original do mininet
