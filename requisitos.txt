@@ -1,2 +1,14 @@
-1. criar uma topologia em mininet que utiliza os switches OVS como bridges com VLANS
-2. se possivel, nao alterar o codigo original do mininet
+Objetivo: construir uma rede do tipo legado simulada e possibilitar passos de
+migracao para uma rede SDN utilizando o proprio mininet.
+
+Passos:
+
+1. Criar topologias em mininet com switches OVS como bridges
+2. Adicionar vlans nos links
+3. Possibilitar adicionar roteamento com quagga (scripts externos??)
+4. Criar topologias mistas (legado + SDN) e possiveis cenarios de migracao
+5. Criar topologias apenas SDN com roteamento (CPqD routeflow)
+
+Restricoes:
+
+ - Se possivel, nao alterar o codigo original do mininet;
