@@ -1,0 +1,86 @@
+!
+version 15.1
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname ISP
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CISCO1941/K9 sn FTX1524L03I
+!
+!
+!
+no ip domain-lookup
+!
+!
+no spanning-tree vlan 1
+spanning-tree mode pvst
+!
+!
+!
+!
+interface Loopback1
+ description google.com
+ ip address 74.125.196.106 255.255.255.255
+!
+interface Loopback2
+ description humblebundle.com
+ ip address 198.41.187.33 255.255.255.255
+!
+interface Loopback3
+ description ufpr.edu.br
+ ip address 200.19.73.151 255.255.255.255
+!
+interface GigabitEthernet0/0
+ ip address 200.200.200.1 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+ shutdown
+!
+interface Serial0/1/0
+ no ip address
+ shutdown
+!
+interface Serial0/1/1
+ no ip address
+ shutdown
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+ip classless
+!
+!
+!
+!
+!
+!
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+!
+end
+
