@@ -5,6 +5,7 @@ from pox.lib.util import dpidToStr
 from pox.lib.util import str_to_bool
 from pox.lib.recoco import Timer
 from pox.lib.packet import ethernet
+from pox.lib.addresses import IPAddr
 import time
 
 import threading
@@ -68,7 +69,14 @@ class SRServerListener(EventMixin):
     except KeyError:
         log.debug("Couldn't find interface for portnumber %s" % event.port)
         return
-    print "srpacketin, packet=%s" % ethernet(event.pkt)
+    pkt = ethernet(event.pkt)
+    log.info("srpacketin, packet=%s" % pkt)
+    if pkt.type == pkt.IP_TYPE:
+        log.info('Caught SR In IP Packet: %s => %s' % (pkt.next.srcip, pkt.next.dstip))
+        if pkt.next.srcip == '192.168.30.2' and pkt.next.dstip == '192.168.30.254':
+            pkt.next.dstip = IPAddr('192.168.10.1')
+            log.info('Rewritten In packet   : %s => %s' % (pkt.next.srcip, pkt.next.dstip))
+    event.pkt = pkt.pack()
     self.broadcast(VNSPacket(intfname, event.pkt))
 
   def _handle_RouterInfo(self, event):

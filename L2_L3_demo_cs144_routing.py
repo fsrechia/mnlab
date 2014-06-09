@@ -45,8 +45,8 @@ def RemoteControllerNet():
     net.addLink( SW4, SW3 )
 
     print "*** Adicionando controlador remoto POX"
-    c0 = RemoteController('POX', ip='127.0.0.1', port=6633)
-    c1 = RemoteController('POX', ip='127.0.0.1', port=9000)
+    c0 = RemoteController('POX_L2', ip='127.0.0.1', port=6633)
+    c1 = RemoteController('POX_SR', ip='127.0.0.1', port=9000)
 
     print "*** Construindo e iniciando os elementos da rede"
     net.build()
@@ -64,6 +64,11 @@ def RemoteControllerNet():
 
     print "*** Imprimindo tabela de conexoes:"
     dumpNodeConnections(net.switches)
+    print "*** Imprimindo DPIDs dos switches:"
+    print "SW1:",SW1.dpid
+    print "SW2:",SW2.dpid
+    print "SW3:",SW3.dpid
+    print "SW4:",SW4.dpid
 
     print "*** Iniciando CLI"
     CLI( net )

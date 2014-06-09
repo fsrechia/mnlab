@@ -66,8 +66,8 @@ class OFHandler (EventMixin):
     # Switch we'll be adding L2 learning switch capabilities to
     self.connection = connection
     self.transparent = transparent
+    self.nat_rule_installed = False
     self.sw_info = {}
-    #self.connection.send(of.ofp_switch_config(miss_send_len = 65535))
     self.connection.send(of.ofp_set_config(miss_send_len = 65535))
     for port in connection.features.ports:
         intf_name = port.name.split('-')
@@ -88,6 +88,27 @@ class OFHandler (EventMixin):
     Handles packet in messages from the switch to implement above algorithm.
     """
     pkt = event.parse()
+    if pkt.type == pkt.IP_TYPE:
+        log.info('Caught SR In IP Packet: %s => %s' % (pkt.next.srcip, pkt.next.dstip))
+        if pkt.next.srcip == '192.168.30.2' and pkt.next.dstip == '192.168.30.254':
+            pkt.next.dstip = IPAddr('192.168.10.1')
+            log.info('Rewritten In packet   : %s => %s' % (pkt.next.srcip, pkt.next.dstip))
+   # if pkt.type == ethernet.IP_TYPE and not self.nat_rule_installed:
+   #   log.info('got IP Packet: %s => %s' % (pkt.next.srcip, pkt.next.dstip))
+   #   if pkt.next.dstip == '192.168.30.2' and pkt.next.srcip == '192.168.10.1':
+   #     log.info('trying to create stupid NAT rule...')
+   #     nat_rule = of.ofp_flow_mod()
+   #     nat_rule.match.dl_type = 0x800
+   #     nat_rule.match.nw_src = pkt.next.srcip
+   #     nat_rule.match.nw_src = pkt.next.srcip
+   #     nat_rule.actions.append(of.ofp_action_nw_addr.set_src('192.168.30.254')) 
+   #     nat_rule.actions.append(of.ofp_action_dl_addr.set_src('ce:cc:af:a9:be:64'))
+   #     nat_rule.actions.append(of.ofp_action_dl_addr.set_dst('02:00:00:00:30:02'))
+   #     nat_rule.actions.append(of.ofp_action_output(port = 3))
+   #     self.connection.send(nat_rule)
+   #     self.nat_rule_installed = True
+
+
     raw_packet = pkt.raw
     core.cs144_ofhandler.raiseEvent(SRPacketIn(raw_packet, event.port))
     msg = of.ofp_packet_out()
@@ -104,7 +125,14 @@ class OFHandler (EventMixin):
     #msg.buffer_id = -1
     msg.buffer_id = None
     msg.in_port = of.OFPP_NONE
-    msg.data = new_packet
+    e = ethernet(raw=new_packet)
+    if e.type == ethernet.IP_TYPE:
+        log.info('Caught SR Out IP Packet: %s => %s' % (e.next.srcip, e.next.dstip))
+        if e.next.srcip == '192.168.10.1' and e.next.dstip == '192.168.30.2':
+            e.next.srcip = IPAddr('192.168.30.254')
+            log.info('Rewritten Out packet   : %s => %s' % (e.next.srcip, e.next.dstip))
+    #msg.data = new_packet
+    msg.data = e.pack()
     self.connection.send(msg)
 
 class SRPacketIn(Event):
